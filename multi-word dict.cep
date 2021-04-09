@@ -1,0 +1,109 @@
+%%% Ceptre simulation of multi-word dictionary game %%%
+%%% The player can push or drag letters A,T,C to spell words "ACT" or "CAT"
+
+entity: type.
+player: entity.
+letter: type.
+
+letterA : letter.
+letterC : letter.
+letterT : letter.
+
+nat : type.
+z : nat.
+s nat : nat.
+
+#builtin NAT nat.
+#builtin NAT_ZERO z.
+#builtin NAT_SUCC s.
+
+lt nat nat : bwd.
+lt z (s N).
+lt (s N) (s M)
+  <- lt N M.
+
+cell : type.
+xy nat nat : cell.
+
+width nat: bwd.
+width 5.
+
+% player_on C P means player P is on cell C
+player_on cell entity : pred.
+% on C L means letter L is on cell C
+on cell letter : pred.
+% empty C means cell C is empty
+empty cell : pred.
+
+direction : type.
+up : direction.
+down : direction.
+left : direction.
+right : direction.
+
+in_dir direction cell cell : bwd.
+in_dir up    (xy X (s Y)) (xy X Y).
+in_dir down  (xy X Y) (xy X (s Y))
+  <- width W
+  <- lt (s Y) W.
+in_dir left  (xy (s X) Y) (xy X Y).
+in_dir right (xy X Y) (xy (s X) Y)
+  <- width W
+  <- lt (s X) W.
+
+
+% opp_dir D1 D2 means the directions D1 D2 are opposite 
+opp_dir direction direction : bwd.
+opp_dir up down.
+opp_dir down up.
+opp_dir left right.
+opp_dir right left.
+
+stage play = {
+
+    %  [@][_] -> [_][@]
+    player_movement : player_on C1 player * in_dir D C1 C2 * empty C2 -o empty C1 * player_on C2 player.
+ 
+    %  [@][L][_] -> [_][@][L]
+    push_letter : 
+	player_on C1 player * in_dir D C1 C2 * on C2 L * in_dir D C2 C3 * empty C3 
+	-o empty C1 * player_on C2 player * on C3 L.
+
+    %  [L][@][_] -> [_][L][@]
+    drag_letter :
+	player_on C1 player * in_dir D C1 C2 * on C2 L * in_dir OD C1 C3 * opp_dir D OD * empty C3 
+	-o player_on C3 player * on C1 L * empty C2.
+
+    %  [C][A][T]
+    spell_CAT :
+	on C1 letterC * in_dir D C1 C2 * on C2 letterA * in_dir D C2 C3 * on C3 letterT 
+	-o empty C1 * empty C2 * empty C3.
+
+    %  [A][C][T]
+    spell_ACT :
+	on C1 letterA * in_dir D C1 C2 * on C2 letterC * in_dir D C2 C3 * on C3 letterT 
+	-o empty C1 * empty C2 * empty C3.
+	
+}
+#interactive play.
+
+% _ _ _ _ _
+% _ A _ C _
+% _ _ _ _ _
+% _ _ _ @ _
+% _ T _ _ _
+
+
+
+context init = {
+  empty (xy 0 0), empty (xy 1 0), empty (xy 2 0), empty (xy 3 0), empty (xy 4 0),
+  empty (xy 0 1), on (xy 1 1) letterA, empty (xy 2 1), on (xy 3 1) letterC, empty (xy 4 1),
+  empty (xy 0 2), empty (xy 1 2), empty (xy 2 2), empty (xy 3 2), empty (xy 4 2),
+  empty (xy 0 3), empty (xy 1 3), empty (xy 2 3), player_on (xy 3 3) player, empty (xy 4 3), 
+  empty (xy 0 4), on (xy 1 4) letterT, empty (xy 2 4), empty (xy 3 4), empty (xy 4 4) }.
+
+
+#trace _ play init.
+
+
+
