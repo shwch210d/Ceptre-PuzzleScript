@@ -83,32 +83,32 @@ stage play = {
 
   %   [@][O][_] --> [_][@][O]
   push_obstacle : 
-    on l1 C1 player * in_dir D C1 C2 * on l1 C2 obstacle * in_dir D C2 C3 * empty l1 C3
-    -o empty l1 C1 * on l1 C2 player * on l1 C3 obstacle.
+    on L1 C1 player * in_dir D C1 C2 * on L1 C2 obstacle * in_dir D C2 C3 * empty L1 C3
+    -o empty L1 C1 * on L1 C2 player * on L1 C3 obstacle.
 
   %   [#][#][#] --> [_][_][_]
   disappear :
-	on l1 C1 crate * in_dir D C1 C2 * on l1 C2 crate * in_dir D C2 C3 * on l1 C3 crate 
-	-o empty l1 C1 * empty l1 C2 * empty l1 C3.
+	on L1 C1 crate * in_dir D C1 C2 * on L1 C2 crate * in_dir D C2 C3 * on L1 C3 crate 
+	-o empty L1 C1 * empty L1 C2 * empty L1 C3.
 
 
   % If the player has moved across 3 consecutive empty cells, 
   % a random crate will be generated and placed in the middle
-  random_crate :
-  	on l2 C1 counter * in_dir D C1 C2 * on l2 C2 counter * in_dir D C2 C3 * on l2 C3 counter 
-  	-o empty l2 C1 * empty l2 C2 * empty l2 C3 * on l1 C2 crate.
+  %random_crate :
+  %	on l2 C1 counter * in_dir D C1 C2 * on l2 C2 counter * in_dir D C2 C3 * on l2 C3 counter 
+  %	-o empty l2 C1 * empty l2 C2 * empty l2 C3 * on l1 C2 crate.
 
 
   % push a crate till it reaches the boundary
   move_push_boundary : 
-    on l1 C1 player * in_dir D C1 C2 * on l1 C2 crate * boundary D C2 C3
-    -o empty l1 C1 * on l1 C2 player * on l1 C3 crate.
+    on L1 C1 player * in_dir D C1 C2 * on L1 C2 crate * boundary D C2 C3
+    -o empty L1 C1 * on L1 C2 player * on L1 C3 crate.
 
 
   % a fallable object can fall down on the ground if the cell below it is empty
   object_falling : 
-    on l1 C1 fallable * in_dir down C1 C2 * empty l1 C2 * boundary down C1 C3
-    -o empty l1 C1 * on l1 C3 fallable.
+    on L1 C1 fallable * in_dir down C1 C2 * empty L1 C2 * boundary down C1 C3
+    -o empty L1 C1 * on L1 C3 fallable.
 
 }
 #interactive play.
